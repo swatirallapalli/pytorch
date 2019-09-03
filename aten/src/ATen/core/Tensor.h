@@ -395,6 +395,12 @@ class CAFFE2_API Tensor {
   Tensor any(int64_t dim, bool keepdim=false) const;
   Tensor argmax(c10::optional<int64_t> dim=c10::nullopt, bool keepdim=false) const;
   Tensor argmin(c10::optional<int64_t> dim=c10::nullopt, bool keepdim=false) const;
+  #ifdef BUILD_NAMEDTENSOR
+  Tensor argmax(Dimname dim, bool keepdim=false) const;
+  #endif
+  #ifdef BUILD_NAMEDTENSOR
+  Tensor argmin(Dimname dim, bool keepdim=false) const;
+  #endif
   Tensor as_strided(IntArrayRef size, IntArrayRef stride, c10::optional<int64_t> storage_offset=c10::nullopt) const;
   Tensor & as_strided_(IntArrayRef size, IntArrayRef stride, c10::optional<int64_t> storage_offset=c10::nullopt) const;
   Tensor asin() const;
@@ -675,6 +681,9 @@ class CAFFE2_API Tensor {
   Tensor values() const;
   int64_t numel() const;
   std::vector<Tensor> unbind(int64_t dim=0) const;
+  #ifdef BUILD_NAMEDTENSOR
+  std::vector<Tensor> unbind(Dimname dim) const;
+  #endif
   Tensor to_sparse(int64_t sparse_dim) const;
   Tensor to_sparse() const;
   Tensor to_mkldnn() const;
