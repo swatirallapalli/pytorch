@@ -63,10 +63,11 @@ const MessageType& Message::type() const {
 bool Message::isRequest() const {
   return MessageType::SCRIPT_CALL == type_
       || MessageType::PYTHON_CALL == type_
+      || MessageType::PYTHON_REMOTE_CALL == type_
       || MessageType::REMOTE_CALL == type_
       || MessageType::RREF_FETCH == type_
-      || MessageType::RREF_USER_CREATE == type_
-      || MessageType::RREF_USER_DELETE == type_;
+      || MessageType::RREF_USER_DELETE == type_
+      || MessageType::RREF_FORK_NOTIFY == type_;
 }
 
 bool Message::requiresResponse() const {
@@ -78,7 +79,9 @@ bool Message::requiresResponse() const {
 bool Message::isResponse() const {
   return MessageType::SCRIPT_RET == type_
       || MessageType::PYTHON_RET == type_
-      || MessageType::RREF_VALUE == type_;
+      || MessageType::RREF_VALUE == type_
+      || MessageType::RREF_USER_ACCEPT == type_
+      || MessageType::RREF_FORK_ACCEPT == type_;
 }
 
 bool Message::isShutdown() const {

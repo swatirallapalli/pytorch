@@ -12,11 +12,15 @@ enum MessageType {
   SCRIPT_RET,
   PYTHON_CALL,
   PYTHON_RET,
-  REMOTE_CALL,
-  RREF_FETCH,
-  RREF_VALUE,
-  RREF_USER_CREATE,
-  RREF_USER_DELETE,
+  REMOTE_CALL,      // A remote call
+  PYTHON_REMOTE_CALL,
+  RREF_FETCH,       // A UserRRef uses this message to fetch value from owner
+  PYTHON_RREF_FETCH,
+  RREF_VALUE,       // An OwnerRRef uses this message to send value to user
+  RREF_USER_ACCEPT, // An OwnerRRef uses this message to accept any user
+  RREF_USER_DELETE, // A UserRRef uses this message to deref on owner
+  RREF_FORK_NOTIFY, // A UserRRef uses this message to notify owner on fork
+  RREF_FORK_ACCEPT, // An OwnerRRef uses this message to accept a fork request
   SHUTDOWN,
   EXCEPTION,
   UNKNOWN

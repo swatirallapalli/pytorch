@@ -4,6 +4,8 @@
 #include <torch/csrc/distributed/rpc/message.h>
 #include <torch/csrc/distributed/rpc/rpc_agent.h>
 #include <torch/csrc/distributed/rpc/types.h>
+#include <torch/csrc/utils/pybind.h>
+
 
 #include <atomic>
 
@@ -14,6 +16,7 @@ namespace rpc {
 
 class RRef;
 class RRefContext;
+template <typename T>
 class UserRRef;
 
 // Represents fork of an RRef to be sent over the wire.
@@ -30,6 +33,7 @@ struct RRefForkData {
  private:
   friend class RRef;
   friend class RRefContext;
+  template <typename T>
   friend class UserRRef;
 
   RRefForkData(worker_id_t ownerId,
@@ -55,23 +59,32 @@ class RRef {
 
   worker_id_t owner() const;
   const RRefId& id() const;
-  IValue fork() const;
 
   virtual bool isOwner() const = 0;
-  virtual IValue toHere() = 0;
+  virtual bool isPyObj() = 0;
 
  protected:
+  friend class RRefContext;
+
   RRef(worker_id_t ownerId, const RRefId& rrefId);
+
+  RRefForkData fork() const;
 
   const worker_id_t ownerId_;
   const RRefId rrefId_;
 };
 
+template <typename T>
 class UserRRef final: public RRef {
  public:
   const ForkId& forkId() const;
   bool isOwner() const override;
-  IValue toHere() override;
+
+  bool isPyObj() override {
+    return std::is_same<T, py::object>::value;
+  }
+
+  T toHere();
 
   ~UserRRef() override;
  private:
@@ -106,8 +119,8 @@ class OwnerRRef final: public RRef {
     valueCV_.notify_all();
   }
 
-  IValue toHere() override {
-    AT_ERROR("OwnerRRef does not support toHere(), use getValue() instead.");
+  bool isPyObj() override {
+    return std::is_same<T, py::object>::value;
   }
 
   // TODO: add setValue(py::object) and getPyObj() for Python UDF
