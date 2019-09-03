@@ -50,11 +50,11 @@ class ProcessGroupAgent : public RpcAgent {
 
   const WorkerId& getWorkerId(const std::string& workerName) const override;
 
+  const WorkerId& getWorkerId(worker_id_t id) const override;
+
   void join() override;
 
   void sync() override;
-
-  int16_t getWorkerId() override;
 
  private:
   void collectNames();
